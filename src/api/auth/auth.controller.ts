@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { createAuth, getAuth, updateAuth } from "../../services/auth.service";
 import { createToken } from "../../helpers/jwt";
-import { check } from "../../helpers/password";
+import { check, hash } from "../../helpers/password";
 import {
   BadRequestResponse,
   ErrorResponse,
@@ -41,6 +41,7 @@ const loginController = {
           refreshToken,
         });
       }
+
       return BadRequestResponse(res, "Mật khẩu không chính xác");
     } catch (err: any) {
       next(err);
@@ -81,12 +82,24 @@ const loginController = {
     let data = req.body as IAuth;
 
     try {
+      let existedAuth = await getAuth({ phone: data.phone });
+
+      if (existedAuth) return BadRequestResponse(res, "Phone is used");
+
+      data.password = await hash(data.password);
+
       let auth = await createAuth(data);
 
-      let accessToken = await createToken(auth, process.env.SECRET_KEY!, "7d");
+      const { password, ...authInfo } = auth!;
+
+      let accessToken = await createToken(
+        authInfo,
+        process.env.SECRET_KEY!,
+        "7d"
+      );
 
       let refreshToken = await createToken(
-        auth,
+        authInfo,
         process.env.REFRESH_TOKEN!,
         "14d"
       );
@@ -96,7 +109,7 @@ const loginController = {
         refreshToken,
       });
     } catch (err: any) {
-      ErrorResponse(res, err.message);
+      return ErrorResponse(res, err.message);
     }
   },
 
