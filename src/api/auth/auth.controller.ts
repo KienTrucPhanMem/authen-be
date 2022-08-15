@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { createAuth, getAuth, updateAuth } from "../../services/auth.service";
 import { createToken } from "../../helpers/jwt";
 import { check, hash } from "../../helpers/password";
 import {
@@ -7,6 +6,7 @@ import {
   ErrorResponse,
   SuccessResponse,
 } from "../../helpers/response";
+import { createAuth, getAuth, updateAuth } from "../../services/auth.service";
 import { IAuth } from "./../../models/Auth";
 
 const loginController = {
