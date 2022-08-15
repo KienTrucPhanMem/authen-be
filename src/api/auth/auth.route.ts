@@ -7,6 +7,7 @@ router.get("/login/refresh-token", authController.refreshToken);
 
 router.post("/login", authController.login);
 router.post("/register", authController.register);
+router.post("/validate-token", authController.validateToken);
 
 router.put("/update", authController.update);
 

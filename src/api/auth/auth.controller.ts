@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { createToken } from "../../helpers/jwt";
+import { authenticate, createToken } from "../../helpers/jwt";
 import { check, hash } from "../../helpers/password";
 import {
   BadRequestResponse,
   ErrorResponse,
   SuccessResponse,
+  UnauthorizedResponse,
 } from "../../helpers/response";
 import { createAuth, getAuth, updateAuth } from "../../services/auth.service";
 import { IAuth } from "./../../models/Auth";
@@ -110,6 +111,20 @@ const loginController = {
       });
     } catch (err: any) {
       return ErrorResponse(res, err.message);
+    }
+  },
+
+  async validateToken(req: Request, res: Response) {
+    let token = req.body as string;
+
+    if (!token) return BadRequestResponse(res, "Token required");
+
+    try {
+      let decoded = await authenticate(token, process.env.SECRET_KEY || "");
+
+      return SuccessResponse(res, decoded);
+    } catch (err: any) {
+      return UnauthorizedResponse(res, err.message);
     }
   },
 
