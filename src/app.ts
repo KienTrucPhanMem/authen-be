@@ -1,15 +1,11 @@
 import cors from "cors";
-import dotenv from "dotenv";
-import dotenvParseVariables from "dotenv-parse-variables";
 import express from "express";
 import morgan from "morgan";
 import path from "path";
 import router from "./routes";
 
 /* ENV */
-let env = dotenv.config();
-if (env.error) throw env.error;
-env = dotenvParseVariables(env.parsed!, { assignToProcessEnv: true });
+require("dotenv").config();
 
 /* CONSTANT */
 const app = express();
