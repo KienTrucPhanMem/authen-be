@@ -115,11 +115,13 @@ const loginController = {
   },
 
   async validateToken(req: Request, res: Response) {
-    let token = req.body as string;
+    let token = req.body.token as string;
 
     if (!token) return BadRequestResponse(res, "Token required");
 
     try {
+      console.log(typeof token);
+
       let decoded = await authenticate(token, process.env.SECRET_KEY || "");
 
       return SuccessResponse(res, decoded);
